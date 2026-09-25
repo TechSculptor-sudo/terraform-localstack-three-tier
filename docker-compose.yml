@@ -1,0 +1,28 @@
+name: three-tier
+
+services:
+  localstack:
+    # Pinned version (not "latest") so everyone gets the same behaviour.
+    image: localstack/localstack:2026.08.4
+    container_name: localstack
+    ports:
+      # Bound to 127.0.0.1 only: the emulator is reachable from this machine,
+      # not from other machines on your network.
+      - "127.0.0.1:4566:4566"
+    environment:
+      # Read from .env. Compose refuses to start with a clear error if it's missing.
+      LOCALSTACK_AUTH_TOKEN: ${LOCALSTACK_AUTH_TOKEN:?Set LOCALSTACK_AUTH_TOKEN in .env}
+      # Only the services this project needs (explained in the table above).
+      SERVICES: ec2,iam,sts
+      # EC2 instances are stored as records only; LocalStack doesn't start containers for them.
+      # This means we do NOT need to mount /var/run/docker.sock into LocalStack
+      # (Phase 1 lesson: docker socket access = root).
+      EC2_VM_MANAGER: mock
+      AWS_DEFAULT_REGION: us-east-1
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped

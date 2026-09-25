@@ -1,0 +1,7 @@
+# Copy to terraform.tfvars to override defaults (terraform.tfvars is gitignored).
+# Never put secrets or real AWS credentials in this file.
+
+project_name        = "three-tier"
+environment         = "local"
+region              = "us-east-1"
+localstack_endpoint = "http://localhost:4566"
