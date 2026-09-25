@@ -26,3 +26,23 @@ services:
       retries: 10
       start_period: 15s
     restart: unless-stopped
+
+  app:
+    build: ./app
+    image: three-tier-app:1.0
+    # No container_name: Phase 9 runs several copies with --scale.
+    environment:
+      APP_ENV: local
+      APP_VERSION: "1.0"
+    ports:
+      # TEMPORARY (Phase 6 testing only). In Phase 8 the app stops being
+      # published and only the load balancer (Nginx) can reach it.
+      - "127.0.0.1:8000:8000"
+    # Hardening: read-only filesystem, no privilege escalation, no Linux
+    # capabilities. The app needs none of them.
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped

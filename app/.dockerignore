@@ -1,0 +1,9 @@
+# Keep the build context small and keep local junk out of the image.
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.env.*
+Dockerfile
+.dockerignore
