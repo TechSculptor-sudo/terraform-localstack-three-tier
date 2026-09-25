@@ -1,3 +1,5 @@
+# ---- General (Phase 3) ------------------------------------------------------
+
 variable "project_name" {
   description = "Short name used as a prefix for every resource."
   type        = string
@@ -36,6 +38,7 @@ variable "localstack_endpoint" {
     error_message = "localstack_endpoint must be http://localhost:4566 or http://127.0.0.1:4566. Refusing to use any other endpoint."
   }
 }
+
 # ---- Networking (Phase 4) ---------------------------------------------------
 
 variable "vpc_cidr" {
@@ -65,4 +68,28 @@ variable "db_subnet_cidrs" {
   description = "Private database subnets, one per AZ."
   type        = list(string)
   default     = ["10.0.21.0/24", "10.0.22.0/24"]
+}
+
+# ---- Security (Phase 5) -----------------------------------------------------
+
+variable "application_port" {
+  description = "Port the Flask application listens on."
+  type        = number
+  default     = 8000
+
+  validation {
+    condition     = var.application_port >= 1024 && var.application_port <= 65535
+    error_message = "application_port must be between 1024 and 65535 (non-privileged, so the app can run as non-root)."
+  }
+}
+
+variable "database_port" {
+  description = "Port PostgreSQL listens on."
+  type        = number
+  default     = 5432
+
+  validation {
+    condition     = var.database_port >= 1024 && var.database_port <= 65535
+    error_message = "database_port must be between 1024 and 65535."
+  }
 }
