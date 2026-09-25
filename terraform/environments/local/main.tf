@@ -18,3 +18,20 @@ data "aws_region" "current" {}
 data "aws_availability_zones" "available" {
   state = "available"
 }
+# ---- Networking (Phase 4) ---------------------------------------------------
+
+locals {
+  # First two AZs reported by the region -> ["us-east-1a", "us-east-1b"].
+  azs = slice(data.aws_availability_zones.available.names, 0, 2)
+}
+
+module "networking" {
+  source = "../../modules/networking"
+
+  name_prefix         = local.name_prefix
+  vpc_cidr            = var.vpc_cidr
+  availability_zones  = local.azs
+  public_subnet_cidrs = var.public_subnet_cidrs
+  app_subnet_cidrs    = var.app_subnet_cidrs
+  db_subnet_cidrs     = var.db_subnet_cidrs
+}
